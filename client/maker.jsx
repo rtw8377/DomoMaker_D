@@ -1,73 +1,69 @@
 const helper = require('./helper.js');
 
-const handleDomo = (e) => {
+const handleNote = (e) => {
     e.preventDefault();
     helper.hideError();
 
-    const name = e.target.querySelector('#domoName').value;
-    const age = e.target.querySelector('#domoAge').value;
+    const name = e.target.querySelector('#noteName').value;
     const _csrf = e.target.querySelector('#_csrf').value;
 
-    if(!name || !age) {
+    if(!name) {
         helper.handleError('All fields are required!');
         return false;
     }
 
-    sendPost(e.target.action, {name, age, _csrf}, loadDomosFromServer);
+    sendPost(e.target.action, {name, _csrf}, loadNotesFromServer);
     return false;
 }
 
-const DomoForm = (props) => {
+const NoteForm = (props) => {
     return (
-        <form id="domoForm"
-            name="domoForm"
-            onSubmit={handleDomo}
+        <form id="noteForm"
+            onSubmit={handleNote}
+            name="noteForm"
             action="/maker"
             method="POST"
-            className="domoForm"
+            className="noteForm"
         >
             <label htmlFor="name">Name: </label>
-            <input id="domoName" type="text" name="name" placeholder="Domo Name" />
-            <label htmlFor="age">Age: </label>
-            <input id="domoAge" type="number" name="age" min="0" />
+            <input id="noteName" type="text" name="name" placeholder="Note Name" />
             <input id="_csrf" type="hidden" name="_csrf" value={props.csrf} />
-            <input className="makeDomoSubmit" type="submit" value="Make Domo" />
+            <input className="makeNoteSubmit" type="submit" value="Make Note" />
         </form>
     );
 };
 
-const DomoList = (props) => {
-    if(props.domos.length === 0) {
+const NoteList = (props) => {
+    if(props.notes.length === 0) {
         return (
-            <div className="domoList">
-                <h3 className="emptyDomo">No Domos Yet!</h3>
+            <div className="noteList">
+                <h3 className="emptyNote">No Notes Yet!</h3>
             </div>
         );
     }
 
-    const domoNodes = props.domos.map(domo => {
+    const noteNodes = props.notes.map(note => {
         return (
-            <div key={domo._id} className="domo">
-                <img src="/assets/img/domoface.jpeg" alt="domo face" className="domoFace" />
-                <h3 className="domoName">Name: {domo.name} </h3>
-                <h3 className="domoAge">Age: {domo.age} </h3>
+            <div key={note._id} className="note">
+                <img src="/assets/img/placeholder.png" alt="placeholder" className="placeholder" />
+                <h3 className="noteName">Name: {note.name} </h3>
             </div>
         );
     });
 
     return (
-        <div className="domoList">
-            {domoNodes}
+        <div className="noteList">
+            {noteNodes}
         </div>
     );
 }
 
-const loadDomosFromServer = async () => {
-    const response = await fetch('/getDomos');
+const loadNotesFromServer = async () => {
+    const response = await fetch('/getNotes');
     const data = await response.json();
     ReactDOM.render(
-        <DomoList domos={data.domos} />,
-        document.getElementById('domos')
+        <NoteList notes={data.notes} />,
+        document.getElementById('notes')
     );
 }
 
@@ -75,13 +71,17 @@ const init = async () => {
     const response = await fetch('/getToken');
     const data = await response.json();
 
-    ReactDOM.render(<DomoForm csrf={data.csrfToken} />,
-    document.getElementById('makeDomo')
+    ReactDOM.render(
+        <NoteForm csrf={data.csrfToken} />,
+        document.getElementById('makeNote')
     );
 
-    ReactDOM.render(<DomoList domos={[]} />,
-    document.getElementById('domos')
+    ReactDOM.render(
+        <NoteList notes={[]} />,
+        document.getElementById('notes')
     );
 
-    loadDomosFromServer();
+    loadNotesFromServer();
 };
+
+window.onload = init;

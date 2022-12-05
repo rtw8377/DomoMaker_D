@@ -72,4 +72,5 @@ module.exports = {
   login,
   logout,
   signup,
+  getToken,
 };
