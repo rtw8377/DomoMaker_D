@@ -14,7 +14,7 @@ module.exports = {
                 loader: 'babel-loader',
             },
             options: { presets: ['@babel/env','@babel/preset-react'] },
-        },],
+        },],},
 
     mode: 'production',
     watchOptions: {
