@@ -66,7 +66,7 @@ const changePassword = async (req, res) => {
   const pass = `${req.body.pass}`;
   const pass2 = `${req.body.pass2}`;
 
-  if (!username || !pass || !pass2) {
+  if (!pass || !pass2) {
     return res.status(400).json({ error: 'All fields are required!' });
   }
 
@@ -76,17 +76,15 @@ const changePassword = async (req, res) => {
 
   try {
     const hash = await Account.generateHash(pass);
-    await Account.updateOne({password:hash})
+    await Account.updateOne({ password: hash });
     return res.json({ message: 'Password successfully changed', changed: true });
   } catch (err) {
     console.log(err);
-    return res.json({ error: 'Password not changed'});
+    return res.json({ error: 'Password not changed' });
   }
 };
 
-const getToken = (req, res) => {
-  return res.json({csrfToken: req.csrfToken()});
-};
+const getToken = (req, res) => res.json({ csrfToken: req.csrfToken() });
 
 module.exports = {
   loginPage,
