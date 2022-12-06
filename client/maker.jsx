@@ -1,5 +1,5 @@
-const { result } = require('underscore');
 const helper = require('./helper.js');
+let csrfToken;
 
 const handleNote = (e) => {
     e.preventDefault();
@@ -46,13 +46,13 @@ const NoteList = (props) => {
     const saveNote = (e, note) => {
         e.preventDefault();
         const inputText = e.target.querySelector('#input').value;
-        helper.sendPost('/maker', {inputText, _csrf})
+        helper.sendPost('/maker', {inputText, _csrf: csrfToken})
     }
 
     const noteNodes = props.notes.map(note => {
         return (
             <div key={note._id} className="note">
-                <form onSubmit={(e) => { saveNote(e, note); }}>
+                <form className="note" onSubmit={(e) => { saveNote(e, note); }}>
                     <h3 className="noteName">Name: {note.name} </h3>
                     <textarea id="input" type="text" name='note' placeholder="Type Note here"/>
                     <input type="submit" id="saveButton" value="Save"/>
@@ -77,58 +77,6 @@ const loadNotesFromServer = async () => {
     );
 }
 
-//has the user input their password to check if it is the same
-const handleCheckPassword = async (e) => {
-    e.preventDefault();
-    helper.hideError();
-
-    const pass = e.target.querySelector('#pass').value;
-    const _csrf = e.target.querySelector('#_csrf').value;
-
-    //if nothing is entered this error occurs
-    if(!pass){
-        helper.handleError({message:'No password is typed!'});
-        return false;
-    }
-    
-    helper.sendPost(e.target.action, {pass, _csrf}, checkPassFromServer)
-    return false;
-}
-
-//form for the check password
-const CheckPasswordForm = (props) => {
-    return (
-        <div>
-            <h2>Confirm your password to continue</h2>
-            <form id="checkPassForm"
-            name="checkPassForm"
-            onSubmit={handleCheckPassword}
-            action="/checkPassword"
-            method="POST"
-            className="passForm"
-            >
-                <label htmlFor="pass">Current Password: </label>
-                <input id="pass" type="password" name="pass" placeholder="Password"/>
-                <input id="_csrf" type="hidden" name="_csrf" value={props.csrf} />
-                <input className="formSubmit" type="submit" value="Submit"/>
-            </form>
-        </div>
-
-    );
-};
-
-//if the password matches, switch to the change password portion
-const checkPassFromServer = async (result) => {
-    if(result.canChange){
-        ReactDOM.render(
-            <ChangePasswordForm csrf={data.csrfToken} />,
-            document.getElementById('changePassword')
-        )
-    } else {
-        helper.handleError(result);
-    }
-}
-
 //allows the user to enter a new password
 const handleChangePassword = async (e) => {
     e.preventDefault();
@@ -143,9 +91,7 @@ const handleChangePassword = async (e) => {
         return false;
     }
     
-    helper.sendPost('/changePassword', {pass, pass2, _csrf}, (result) => {
-        helper.handleError(result);
-    });
+    helper.sendPost('/password', {pass, pass2, _csrf} );
     
     return false;
 }
@@ -156,7 +102,7 @@ const ChangePasswordForm = (props) => {
         <form id="changePassForm"
             name="changePassForm"
             onSubmit={handleChangePassword}
-            action="/changePassword"
+            action="/password"
             method="POST"
             className="changePassForm"
         >
@@ -174,10 +120,11 @@ const ChangePasswordForm = (props) => {
 const init = async () => {
     const response = await fetch('/getToken');
     const data = await response.json();
+    csrfToken = data.csrfToken;
 
     passwordButton.addEventListener('click', (e) => {
         e.preventDefault();
-        ReactDOM.render(<CheckPasswordForm csrf={data.csrfToken} />,
+        ReactDOM.render(<ChangePasswordForm csrf={data.csrfToken} />,
             document.getElementById('changePassword'));
             return false;
     });

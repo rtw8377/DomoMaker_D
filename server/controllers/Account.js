@@ -62,26 +62,7 @@ const signup = async (req, res) => {
   }
 };
 
-const checkPassword = (req, res) => {
-  let username = req.session.account.username;
-  const pass = `${req.body.pass}`;
-
-  if (!pass) {
-    return res.status(400).json({ error: 'Password is required!' });
-  }
-
-  return Account.authenticate(username, pass, (err, account) => {
-    if (err || !account) {
-      return res.status(401).json({ error: 'Password did not match the current password for this account!', canChange: false });
-    }
-
-    req.session.account = Account.toAPI(account);
-    return res.json({ message: 'Password matched!', canChange: true});
-  });
-};
-
 const changePassword = async (req, res) => {
-  const username = req.session.account.username;
   const pass = `${req.body.pass}`;
   const pass2 = `${req.body.pass2}`;
 
@@ -95,7 +76,7 @@ const changePassword = async (req, res) => {
 
   try {
     const hash = await Account.generateHash(pass);
-    await Account.updateOne({username: username}, {password:hash})
+    await Account.updateOne({password:hash})
     return res.json({ message: 'Password successfully changed', changed: true });
   } catch (err) {
     console.log(err);
@@ -113,7 +94,6 @@ module.exports = {
   login,
   logout,
   signup,
-  checkPassword,
   changePassword,
   getToken,
 };
