@@ -62,6 +62,47 @@ const signup = async (req, res) => {
   }
 };
 
+const checkPassword = (req, res) => {
+  let username = req.session.account.username;
+  const pass = `${req.body.pass}`;
+
+  if (!pass) {
+    return res.status(400).json({ error: 'Password is required!' });
+  }
+
+  return Account.authenticate(username, pass, (err, account) => {
+    if (err || !account) {
+      return res.status(401).json({ error: 'Password did not match the current password for this account!', canChange: false });
+    }
+
+    req.session.account = Account.toAPI(account);
+    return res.json({ message: 'Password matched!', canChange: true});
+  });
+};
+
+const changePassword = async (req, res) => {
+  const username = req.session.account.username;
+  const pass = `${req.body.pass}`;
+  const pass2 = `${req.body.pass2}`;
+
+  if (!username || !pass || !pass2) {
+    return res.status(400).json({ error: 'All fields are required!' });
+  }
+
+  if (pass !== pass2) {
+    return res.status(400).json({ error: 'Passwords do not match!' });
+  }
+
+  try {
+    const hash = await Account.generateHash(pass);
+    await Account.updateOne({username: username}, {password:hash})
+    return res.json({ message: 'Password successfully changed', changed: true });
+  } catch (err) {
+    console.log(err);
+    return res.json({ error: 'Password not changed'});
+  }
+};
+
 const getToken = (req, res) => {
   return res.json({csrfToken: req.csrfToken()});
 };
@@ -72,5 +113,7 @@ module.exports = {
   login,
   logout,
   signup,
+  checkPassword,
+  changePassword,
   getToken,
 };

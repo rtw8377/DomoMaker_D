@@ -204,7 +204,10 @@ nav:nth-child(1) {
 }
 
 .note {
-    width: 95%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 90%;
     margin: 0 auto;
     margin-top: 2px;
     margin-bottom: 2px;
@@ -242,10 +245,11 @@ h3.emptyNote {
 }
 
 h3.noteName {
-    float:left;
+    text-align: center;
     width: 200px;
     font-weight: bold;
-    padding-left: 65px;
+    margin: auto;
+    margin-bottom: 30px;
     font-size: 1.5em;
 }
 
@@ -264,4 +268,11 @@ h3.DELETE {
 
 .note:last-child {
     margin-bottom:10px;
+}
+
+#input {
+    height: 200px;
+    width: 200px;
+    margin: auto;
+    margin-bottom: 20px;
 }

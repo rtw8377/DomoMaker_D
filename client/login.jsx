@@ -36,6 +36,25 @@ const handleSignup = (e) => {
     return false;
 }
 
+const handlePassword = (e) => {
+    e.preventDefault();
+    helper.hideError();
+
+    const username = e.target.querySelector('#user').value;
+    const pass = e.target.querySelector('#pass').value;
+    const pass2= e.target.querySelector('#pass2').value;
+    const _csrf = e.target.querySelector('#_csrf').value;
+
+    if(!username || !pass) {
+        helper.handleError('All fields are required!');
+        return false;
+    }
+
+    helper.sendPost(e.target.action, {username, pass, pass2, _csrf});
+
+    return false;
+}
+
 const LoginWindow = (props) => {
     return (
         <form id="loginForm"
