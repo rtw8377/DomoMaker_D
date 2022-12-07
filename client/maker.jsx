@@ -91,13 +91,21 @@ const handleChangePassword = async (e) => {
         return false;
     }
     
-    helper.sendPost('/password', {pass, pass2, _csrf} );
+    helper.sendPost(e.target.action, {pass, pass2, _csrf} );
     
     return false;
 }
 
+const advertising = (e) => {
+    return(
+        <div>
+            <img src="/assets/img/adSpace.png" alt="ad" />
+        </div>
+    )
+};
+
 //form for the new password
-const ChangePasswordForm = (props) => {
+const ChangePasswordWindow = (props) => {
     return (
         <form id="changePassForm"
             name="changePassForm"
@@ -124,7 +132,7 @@ const init = async () => {
 
     passwordButton.addEventListener('click', (e) => {
         e.preventDefault();
-        ReactDOM.render(<ChangePasswordForm csrf={data.csrfToken} />,
+        ReactDOM.render(<ChangePasswordWindow csrf={data.csrfToken} />,
             document.getElementById('changePassword'));
             return false;
     });
@@ -140,6 +148,8 @@ const init = async () => {
     );
 
     loadNotesFromServer();
+
+    advertising();
 };
 
 window.onload = init;

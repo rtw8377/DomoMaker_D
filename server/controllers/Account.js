@@ -74,14 +74,23 @@ const changePassword = async (req, res) => {
     return res.status(400).json({ error: 'Passwords do not match!' });
   }
 
+  let doc;
   try {
     const hash = await Account.generateHash(pass);
-    await Account.updateOne({ password: hash });
-    return res.json({ message: 'Password successfully changed', changed: true });
+    doc = await Account.findByIdAndUpdate(req.session.account._id, {
+      password: hash,
+    }, { new: true }).exec();
   } catch (err) {
     console.log(err);
-    return res.json({ error: 'Password not changed' });
+    return res.status(400).json({ error: 'An error occurred.' });
   }
+
+  if (!doc) {
+    return res.status(500).json({ error: 'Something went wrong updating your password.' });
+  }
+
+  req.session.account = Account.toAPI(doc);
+  return res.json({ message: 'Password has been updated' });
 };
 
 const getToken = (req, res) => res.json({ csrfToken: req.csrfToken() });

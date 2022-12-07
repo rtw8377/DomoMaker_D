@@ -10,7 +10,7 @@ const router = (app) => {
 
   app.post('/signup', mid.requiresSecure, mid.requiresLogout, controllers.Account.signup);
 
-  app.post('/password', mid.requiresSecure, mid.requiresLogout, controllers.Account.changePassword);
+  app.post('/password', mid.requiresLogin, controllers.Account.changePassword);
 
   app.get('/logout', mid.requiresLogin, controllers.Account.logout);
 

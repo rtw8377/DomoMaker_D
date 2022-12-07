@@ -293,3 +293,11 @@ h3.DELETE {
     margin: auto;
     margin-bottom: 20px;
 }
+
+#adLeft {
+    float: left;
+}
+
+#adRight {
+    float: right;
+}
