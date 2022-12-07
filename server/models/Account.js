@@ -6,7 +6,6 @@
 */
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
-const { object } = require('underscore');
 
 /* When generating a password hash, bcrypt (and most other password hash
    functions) use a "salt". The salt is simply extra data that gets hashed
